@@ -1,5 +1,6 @@
 package com.wilbrom.movieudacity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,13 +10,14 @@ import android.util.Log;
 
 import com.wilbrom.movieudacity.adapters.MovieListAdapter;
 import com.wilbrom.movieudacity.models.Movies;
+import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.utilities.JsonUtils;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieItemInteractionListener {
 
     private RecyclerView movieList;
     private MovieListAdapter adapter;
@@ -28,10 +30,17 @@ public class MainActivity extends AppCompatActivity {
         movieList = (RecyclerView) findViewById(R.id.movie_list);
         movieList.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
 
-        adapter = new MovieListAdapter();
+        adapter = new MovieListAdapter(this);
         movieList.setAdapter(adapter);
         URL url = NetworkUtils.getUrl(NetworkUtils.POPULAR);
         new MovieAsyncTask().execute(url);
+    }
+
+    @Override
+    public void onClickMovieItem(Results results) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("par", results);
+        startActivity(intent);
     }
 
     public class MovieAsyncTask extends AsyncTask<URL, Void, Movies> {
