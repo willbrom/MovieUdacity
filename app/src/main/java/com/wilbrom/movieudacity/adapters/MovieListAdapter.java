@@ -6,12 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.R;
+import com.wilbrom.movieudacity.models.Movies;
+import com.wilbrom.movieudacity.models.Results;
+import com.wilbrom.movieudacity.utilities.NetworkUtils;
+
+import java.util.List;
 
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieItemViewHolder> {
+
+    private List<Results> resultsList;
 
     @Override
     public MovieItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -24,22 +32,31 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     public void onBindViewHolder(MovieItemViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
         Picasso.with(context)
-                .load("")
+                .load(NetworkUtils.BASE_IMAGE_URL_w185 + resultsList.get(position).getPosterPath())
                 .into(holder.moviePoster);
+//        holder.movieTitle.setText(resultsList.get(position).getTitle());
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        if (resultsList == null) return 0;
+        return resultsList.size();
+    }
+
+    public void setResultsList(List<Results> resultsList) {
+        this.resultsList = resultsList;
+        notifyDataSetChanged();
     }
 
     public class MovieItemViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView moviePoster;
+        private TextView movieTitle;
 
         public MovieItemViewHolder(View itemView) {
             super(itemView);
             moviePoster = (ImageView) itemView.findViewById(R.id.movie_poster);
+//            movieTitle = (TextView) itemView.findViewById(R.id.movie_title);
         }
     }
 }

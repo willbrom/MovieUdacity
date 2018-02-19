@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
             Movies movies = null;
 
             try {
-                movies = JsonUtils.parseMovieJson(NetworkUtils.getHttpResponse(urls[0]));
+                String res = NetworkUtils.getHttpResponse(urls[0]);
+                Log.d("TAG", res);
+                movies = JsonUtils.parseMovieJson(res);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Movies movies) {
             if (movies != null) {
                 Log.d("TAG", "Page: " + movies.getPage());
-                movies.getResults();
+                adapter.setResultsList(movies.getResults());
             } else {
                 Log.d("TAG", "Some thing went wrong");
             }

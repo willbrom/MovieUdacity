@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class NetworkUtils {
 
     public static final String BASE_MOVIE_URL = "http://api.themoviedb.org/3/movie/";
+    public static final String BASE_IMAGE_URL_w185 = "http://image.tmdb.org/t/p/w185";
     public static final String KEY = "d89d8544c746180e24453e6f99a145da";
     public static final String POPULAR = "popular";
     public static final String TOP_RATED = "top_rated";
