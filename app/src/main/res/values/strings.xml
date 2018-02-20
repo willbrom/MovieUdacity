@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Movie Udacity</string>
+
+    <string name="test_title">Blade Runner 2049</string>
+    <string name="test_overview">Officer K (Ryan Gosling), a new blade runner for the Los Angeles Police Department,
+        unearths a long-buried secret that has the potential to plunge what\'s left of society into chaos.</string>
+    <string name="test_release_date">2017-10-04</string>
+    <string name="test_vote_average">7.4</string>
+
 </resources>
