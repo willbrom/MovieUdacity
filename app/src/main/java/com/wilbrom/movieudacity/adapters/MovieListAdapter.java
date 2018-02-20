@@ -42,7 +42,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     public void onBindViewHolder(MovieItemViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
         Picasso.with(context)
-                .load(NetworkUtils.BASE_IMAGE_URL_w185 + resultsList.get(position).getPosterPath())
+                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w342) + resultsList.get(position).getPosterPath())
                 .into(holder.moviePoster);
     }
 
