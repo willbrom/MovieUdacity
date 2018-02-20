@@ -20,6 +20,8 @@ public class NetworkUtils {
     public static final String POPULAR = "popular";
     public static final String TOP_RATED = "top_rated";
 
+    public static final String IMAGE_SIZE_w92 = "w92";
+    public static final String IMAGE_SIZE_w154 = "w154";
     public static final String IMAGE_SIZE_w185 = "w185";
     public static final String IMAGE_SIZE_w342 = "w342";
     public static final String IMAGE_SIZE_w780 = "w780";
@@ -51,6 +53,10 @@ public class NetworkUtils {
 
     public static String getImageUrl(String size) {
         switch (size) {
+            case IMAGE_SIZE_w92:
+                return BASE_IMAGE_URL + IMAGE_SIZE_w92;
+            case IMAGE_SIZE_w154:
+                return BASE_IMAGE_URL + IMAGE_SIZE_w154;
             case IMAGE_SIZE_w185:
                 return BASE_IMAGE_URL + IMAGE_SIZE_w185;
             case IMAGE_SIZE_w342:
