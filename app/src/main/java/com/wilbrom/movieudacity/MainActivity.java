@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.wilbrom.movieudacity.adapters.MovieListAdapter;
 import com.wilbrom.movieudacity.models.Movies;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
     private View container;
     private RecyclerView movieList;
+    private ProgressBar progress;
     private MovieListAdapter adapter;
 
     @Override
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         container = (FrameLayout) findViewById(R.id.container);
         movieList = (RecyclerView) findViewById(R.id.movie_list);
+        progress = (ProgressBar) findViewById(R.id.progress);
 
         movieList.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
 
@@ -73,6 +76,11 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     public class MovieAsyncTask extends AsyncTask<URL, Void, Movies> {
 
         @Override
+        protected void onPreExecute() {
+            progress.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected Movies doInBackground(URL... urls) {
             Movies movies = null;
 
@@ -88,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         @Override
         protected void onPostExecute(Movies movies) {
+            progress.setVisibility(View.INVISIBLE);
             if (movies != null) {
                 adapter.setResultsList(movies.getResults());
             } else {
