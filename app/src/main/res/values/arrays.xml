@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- preference list label -->
+    <array name="preference_sort_label">
+        <item>@string/preference_sort_label_popular</item>
+        <item>@string/preference_sort_label_top_rated</item>
+    </array>
+
+    <!-- preference list value -->
+    <array name="preference_sort_values">
+        <item>@string/preference_sort_value_popular</item>
+        <item>@string/preference_sort_value_top_rated</item>
+    </array>
+
+</resources>

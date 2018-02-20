@@ -1,17 +1,28 @@
 <resources>
     <string name="app_name">Movie Udacity</string>
 
-    <!-- error string res -->
+    <!-- error res -->
     <string name="error_occurred">Please check your internet connection</string>
 
-    <!-- menu string res -->
+    <!-- menu res -->
     <string name="settings">Settings</string>
 
-    <!-- Movie detail string res -->
+    <!-- movie detail res -->
     <string name="test_title">Blade Runner 2049</string>
     <string name="test_overview">Officer K (Ryan Gosling), a new blade runner for the Los Angeles Police Department,
         unearths a long-buried secret that has the potential to plunge what\'s left of society into chaos.</string>
     <string name="test_release_date">2017-10-04</string>
     <string name="test_vote_average">7.4</string>
+
+    <!-- preference res -->
+    <string name="preference_sort">Sort by</string>
+    <string name="preference_sort_key">sort_by</string>
+    <string name="preference_sort_default" translatable="false">popular</string>
+
+    <!-- preference list entry res -->
+    <string name="preference_sort_label_popular">Most popular</string>
+    <string name="preference_sort_label_top_rated">Top rated</string>
+    <string name="preference_sort_value_popular" translatable="false">popular</string>
+    <string name="preference_sort_value_top_rated" translatable="false">top_rated</string>
 
 </resources>
