@@ -1,5 +1,6 @@
 package com.wilbrom.movieudacity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -16,6 +17,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView releaseDate;
     private TextView voteAverage;
     private ImageView backdrop;
+    private ImageView poster;
 
     private Results results;
 
@@ -29,9 +31,9 @@ public class DetailActivity extends AppCompatActivity {
         releaseDate = (TextView) findViewById(R.id.release_date);
         voteAverage = (TextView) findViewById(R.id.vote_average);
         backdrop = (ImageView) findViewById(R.id.backdrop);
+        poster = (ImageView) findViewById(R.id.poster);
 
-
-        results = (Results) getIntent().getParcelableExtra("par");
+        results = (Results) getIntent().getParcelableExtra(Intent.EXTRA_TEXT);
 
         title.setText(results.getTitle());
         overview.setText(results.getOverView());
@@ -41,5 +43,10 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.with(this)
                 .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w780) + results.getBackdropPath())
                 .into(backdrop);
+
+        Picasso.with(this)
+                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w154) + results.getPosterPath())
+                .placeholder(R.drawable.placeholder_100x150)
+                .into(poster);
     }
 }
