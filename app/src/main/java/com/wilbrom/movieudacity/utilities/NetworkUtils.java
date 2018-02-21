@@ -1,7 +1,10 @@
 package com.wilbrom.movieudacity.utilities;
 
 
+import android.content.Context;
 import android.net.Uri;
+
+import com.wilbrom.movieudacity.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +18,6 @@ public class NetworkUtils {
     public static final String BASE_MOVIE_URL = "http://api.themoviedb.org/3/movie/";
     public static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
 
-    private static final String KEY = "d89d8544c746180e24453e6f99a145da";
-
     public static final String POPULAR = "popular";
     public static final String TOP_RATED = "top_rated";
 
@@ -26,7 +27,8 @@ public class NetworkUtils {
     public static final String IMAGE_SIZE_w342 = "w342";
     public static final String IMAGE_SIZE_w780 = "w780";
 
-    public static URL getUrl(String sortBy) {
+    public static URL getUrl(String sortBy, Context context) {
+        String key = context.getString(R.string.movie_api_key);
         String fullPath = "";
 
         switch (sortBy) {
@@ -38,7 +40,7 @@ public class NetworkUtils {
         }
 
         Uri uri = Uri.parse(fullPath).buildUpon()
-                .appendQueryParameter("api_key", KEY)
+                .appendQueryParameter("api_key", key)
                 .build();
 
         URL url = null;

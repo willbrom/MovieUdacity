@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Movie Udacity</string>
 
+    <!-- api key res -->
+    <string name="movie_api_key"></string>
+
     <!-- error res -->
     <string name="error_occurred">Please check your internet connection</string>
 

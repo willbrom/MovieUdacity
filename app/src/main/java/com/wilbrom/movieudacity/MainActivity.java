@@ -61,10 +61,10 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         switch (sortBy) {
             case NetworkUtils.POPULAR:
-                url = NetworkUtils.getUrl(NetworkUtils.POPULAR);
+                url = NetworkUtils.getUrl(NetworkUtils.POPULAR, this);
                 break;
             case NetworkUtils.TOP_RATED:
-                url = NetworkUtils.getUrl(NetworkUtils.TOP_RATED);
+                url = NetworkUtils.getUrl(NetworkUtils.TOP_RATED, this);
                 break;
         }
 
