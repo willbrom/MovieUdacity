@@ -2,10 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:title="@string/preference_sort"
-        android:key="@string/preference_sort_key"
-        android:defaultValue="@string/preference_sort_default"
-        android:entries="@array/preference_sort_label"
-        android:entryValues="@array/preference_sort_values" />
+        android:title="@string/preference_sort_list_title"
+        android:key="@string/preference_sort_list_key"
+        android:defaultValue="@string/preference_sort_list_default"
+        android:entries="@array/preference_sort_list_labels"
+        android:entryValues="@array/preference_sort_list_values" />
 
 </PreferenceScreen>

@@ -1,7 +1,9 @@
 package com.wilbrom.movieudacity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,12 +24,13 @@ import com.wilbrom.movieudacity.utilities.NetworkUtils;
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieItemInteractionListener {
+public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieItemInteractionListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private View container;
     private RecyclerView movieList;
     private ProgressBar progress;
     private MovieListAdapter adapter;
+    private String sortBy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,28 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         adapter = new MovieListAdapter(this);
         movieList.setAdapter(adapter);
 
-        URL url = NetworkUtils.getUrl(NetworkUtils.POPULAR);
+        setUpSharedPreferences();
+        startAsync(sortBy);
+    }
+
+    private void setUpSharedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sortBy = sharedPreferences.getString(getString(R.string.preference_sort_list_key), getString(R.string.preference_sort_list_default));
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    private void startAsync(String sortBy) {
+        URL url = null;
+
+        switch (sortBy) {
+            case NetworkUtils.POPULAR:
+                url = NetworkUtils.getUrl(NetworkUtils.POPULAR);
+                break;
+            case NetworkUtils.TOP_RATED:
+                url = NetworkUtils.getUrl(NetworkUtils.TOP_RATED);
+                break;
+        }
+
         new MovieAsyncTask().execute(url);
     }
 
@@ -73,6 +97,21 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.preference_sort_list_key))) {
+            sortBy = sharedPreferences.getString(key, getString(R.string.preference_sort_list_default));
+            startAsync(sortBy);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
     public class MovieAsyncTask extends AsyncTask<URL, Void, Movies> {
 
         @Override
@@ -83,10 +122,13 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         @Override
         protected Movies doInBackground(URL... urls) {
             Movies movies = null;
+            URL url = urls[0];
 
             try {
-                String res = NetworkUtils.getHttpResponse(urls[0]);
-                movies = JsonUtils.parseMovieJson(res);
+                if (url != null) {
+                    String response = NetworkUtils.getHttpResponse(url);
+                    movies = JsonUtils.parseMovieJson(response);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
