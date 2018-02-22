@@ -36,6 +36,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        
+        <provider
+            android:authorities="com.wilbrom.movieudacity"
+            android:name=".data.MovieProvider"
+            android:exported="false" />
     </application>
 
 </manifest>
