@@ -1,5 +1,6 @@
 package com.wilbrom.movieudacity;
 
+
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -8,7 +9,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.models.Results;

@@ -1,22 +1,19 @@
 package com.wilbrom.movieudacity.adapters;
 
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.R;
-import com.wilbrom.movieudacity.models.Movies;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
 import java.util.List;
-
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MovieItemViewHolder> {
 
@@ -42,7 +39,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     public void onBindViewHolder(MovieItemViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
         Picasso.with(context)
-                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w342) + resultsList.get(position).getPosterPath())
+                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w185) + resultsList.get(position).getPosterPath())
                 .into(holder.moviePoster);
     }
 

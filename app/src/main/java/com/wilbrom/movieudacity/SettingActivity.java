@@ -1,5 +1,6 @@
 package com.wilbrom.movieudacity;
 
+
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;

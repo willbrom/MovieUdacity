@@ -2,7 +2,7 @@
     <string name="app_name">Movie Udacity</string>
 
     <!-- api key res -->
-    <string name="movie_api_key"></string>
+    <string name="movie_api_key">d89d8544c746180e24453e6f99a145da</string>
 
     <!-- error res -->
     <string name="error_occurred">Please check your internet connection</string>

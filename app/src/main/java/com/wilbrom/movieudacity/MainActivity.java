@@ -1,6 +1,10 @@
 package com.wilbrom.movieudacity;
 
+
+import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -24,7 +28,11 @@ import com.wilbrom.movieudacity.utilities.NetworkUtils;
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieItemInteractionListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieItemInteractionListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        LoaderManager.LoaderCallbacks<Movies> {
+
+    private static final int LOADER_ID = 11;
 
     private View container;
     private RecyclerView movieList;
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         movieList.setAdapter(adapter);
 
         setUpSharedPreferences();
-        startAsync(sortBy);
+        startAsync(sortBy, false);
     }
 
     private void setUpSharedPreferences() {
@@ -56,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    private void startAsync(String sortBy) {
+    private void startAsync(String sortBy, boolean prefChange) {
         URL url = null;
 
         switch (sortBy) {
@@ -68,7 +76,18 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 break;
         }
 
-        new MovieAsyncTask().execute(url);
+        Bundle bundle = new Bundle();
+        bundle.putString("bun", url.toString());
+
+        LoaderManager manager = getLoaderManager();
+        Loader<Movies> loader = manager.getLoader(LOADER_ID);
+
+        if (loader != null && !prefChange)
+            manager.initLoader(LOADER_ID, bundle, this);
+        else
+            manager.restartLoader(LOADER_ID, bundle, this);
+
+//        new MovieAsyncTask().execute(url);
     }
 
     @Override
@@ -101,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.preference_sort_list_key))) {
             sortBy = sharedPreferences.getString(key, getString(R.string.preference_sort_list_default));
-            startAsync(sortBy);
+            startAsync(sortBy, true);
         }
     }
 
@@ -111,6 +130,60 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
+
+    @Override
+    public Loader<Movies> onCreateLoader(int i, final Bundle bundle) {
+        return new AsyncTaskLoader<Movies>(this) {
+            private Movies data;
+
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                progress.setVisibility(View.VISIBLE);
+
+                if (data != null)
+                    deliverResult(data);
+                else
+                    forceLoad();
+            }
+
+            @Override
+            public Movies loadInBackground() {
+                String url = bundle.getString("bun");
+                Movies movies = null;
+
+                try {
+                    if (url != null) {
+                        String response = NetworkUtils.getHttpResponse(new URL(url));
+                        movies = JsonUtils.parseMovieJson(response);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return movies;
+            }
+
+            @Override
+            public void deliverResult(Movies data) {
+                this.data = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Movies> loader, Movies movies) {
+        progress.setVisibility(View.INVISIBLE);
+        if (movies != null) {
+            adapter.setResultsList(movies.getResults());
+        } else {
+            Snackbar.make(container, getString(R.string.error_occurred), Snackbar.LENGTH_INDEFINITE).show();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Movies> loader) {}
 
     public class MovieAsyncTask extends AsyncTask<URL, Void, Movies> {
 
