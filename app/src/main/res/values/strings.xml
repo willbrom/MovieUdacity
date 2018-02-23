@@ -27,5 +27,6 @@
     <string name="preference_sort_list_label_top_rated">Top rated</string>
     <string name="preference_sort_list_value_popular" translatable="false">popular</string>
     <string name="preference_sort_list_value_top_rated" translatable="false">top_rated</string>
+    <string name="favorite">Favorites</string>
 
 </resources>

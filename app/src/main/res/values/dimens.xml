@@ -2,4 +2,5 @@
 <resources>
     <dimen name="card_side_margin">6dp</dimen>
     <dimen name="card_inside_padding">12dp</dimen>
+    <dimen name="fab_default_margin">12dp</dimen>
 </resources>
