@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         }
 
         Bundle bundle = new Bundle();
-        bundle.putString("bun", url.toString());
+        bundle.putString(Intent.EXTRA_TEXT, url.toString());
 
         LoaderManager manager = getLoaderManager();
         Loader<Movies> loader = manager.getLoader(LOADER_ID);
@@ -110,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         switch (id) {
             case R.id.action_setting:
                 startActivity(new Intent(this, SettingActivity.class));
+                return true;
+            case R.id.action_favorite:
+                startActivity(new Intent(this, FavoriteActivity.class));
                 return true;
         }
 
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
             @Override
             public Movies loadInBackground() {
-                String url = bundle.getString("bun");
+                String url = bundle.getString(Intent.EXTRA_TEXT);
                 Movies movies = null;
 
                 try {

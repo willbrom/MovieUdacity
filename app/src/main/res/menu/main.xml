@@ -5,7 +5,14 @@
     <item
         android:id="@+id/action_setting"
         android:title="@string/settings"
-        android:orderInCategory="1"
+        android:orderInCategory="200"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_favorite"
+        android:title="@string/favorite"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_favorite_black_24dp" />
 
 </menu>

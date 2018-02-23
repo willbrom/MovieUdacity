@@ -29,18 +29,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".SettingActivity"
+        <activity
+            android:name=".SettingActivity"
             android:label="@string/settings"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        
+
         <provider
-            android:authorities="com.wilbrom.movieudacity"
             android:name=".data.MovieProvider"
+            android:authorities="com.wilbrom.movieudacity"
             android:exported="false" />
+
+        <activity android:name=".FavoriteActivity"></activity>
     </application>
 
 </manifest>
