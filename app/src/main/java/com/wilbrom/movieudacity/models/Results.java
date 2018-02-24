@@ -36,6 +36,32 @@ public class Results implements Parcelable {
     public Results() {
     }
 
+    public Results(String title, String releaseDate, double voteAverage, String posterPath) {
+        this.title = title;
+        this.releaseDate = releaseDate;
+        this.voteAverage = voteAverage;
+        this.posterPath = posterPath;
+    }
+
+    public Results(int voteCount, int id, boolean video, double voteAverage, String title,
+                   double popularity, String posterPath, String originalLanguage, String originalTitle,
+                   int[] genreIds, String backdropPath, boolean adult, String overView, String releaseDate) {
+        this.voteCount = voteCount;
+        this.id = id;
+        this.video = video;
+        this.voteAverage = voteAverage;
+        this.title = title;
+        this.popularity = popularity;
+        this.posterPath = posterPath;
+        this.originalLanguage = originalLanguage;
+        this.originalTitle = originalTitle;
+        this.genreIds = genreIds;
+        this.backdropPath = backdropPath;
+        this.adult = adult;
+        this.overView = overView;
+        this.releaseDate = releaseDate;
+    }
+
     private Results(Parcel in) {
         this.voteCount = in.readInt();
         this.id = in.readInt();
