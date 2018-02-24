@@ -15,8 +15,11 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    public static final String BASE_MOVIE_URL = "http://api.themoviedb.org/3/movie/";
-    public static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String BASE_MOVIE_URL = "http://api.themoviedb.org/3/movie/";
+    private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String BASE_YOUTUBE_URL = "https://www.youtube.com/watch?v=";
+    private static final String VIDEO_END_PATH = "/videos";
+    private static final String REVIEWS_END_PATH = "/reviews";
 
     public static final String POPULAR = "popular";
     public static final String TOP_RATED = "top_rated";
@@ -38,6 +41,42 @@ public class NetworkUtils {
             case TOP_RATED:
                 fullPath = BASE_MOVIE_URL + TOP_RATED;
         }
+
+        Uri uri = Uri.parse(fullPath).buildUpon()
+                .appendQueryParameter("api_key", key)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    public static URL getReviewsUrl(String movieId, Context context) {
+        String key = context.getString(R.string.movie_api_key);
+        String fullPath = BASE_MOVIE_URL + movieId + REVIEWS_END_PATH;
+
+        Uri uri = Uri.parse(fullPath).buildUpon()
+                .appendQueryParameter("api_key", key)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    public static URL getVideosUrl(String movieId, Context context) {
+        String key = context.getString(R.string.movie_api_key);
+        String fullPath = BASE_MOVIE_URL + movieId + VIDEO_END_PATH;
 
         Uri uri = Uri.parse(fullPath).buildUpon()
                 .appendQueryParameter("api_key", key)
