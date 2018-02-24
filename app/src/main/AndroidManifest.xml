@@ -37,13 +37,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <activity android:name=".FavoriteActivity"
+            android:label="@string/favorite"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
         <provider
             android:name=".data.MovieProvider"
             android:authorities="com.wilbrom.movieudacity"
             android:exported="false" />
 
-        <activity android:name=".FavoriteActivity"></activity>
     </application>
 
 </manifest>
