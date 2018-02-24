@@ -13,6 +13,6 @@
         android:title="@string/favorite"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:icon="@drawable/ic_favorite_black_24dp" />
+        android:icon="@drawable/ic_favorite_white_24dp" />
 
 </menu>

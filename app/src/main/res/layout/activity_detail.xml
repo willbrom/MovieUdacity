@@ -40,6 +40,6 @@
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right"
         android:layout_marginRight="@dimen/fab_default_margin"
-        android:src="@drawable/ic_favorite_black_36dp" />
+        android:src="@drawable/ic_favorite_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>
