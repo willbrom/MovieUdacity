@@ -2,6 +2,7 @@ package com.wilbrom.movieudacity.adapters;
 
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +39,15 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
     @Override
     public void onBindViewHolder(MovieItemViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
+        String imageSize;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+            imageSize = NetworkUtils.IMAGE_SIZE_w185;
+        else
+            imageSize = NetworkUtils.IMAGE_SIZE_w342;
+
         Picasso.with(context)
-                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w185) + resultsList.get(position).getPosterPath())
+                .load(NetworkUtils.getImageUrl(imageSize) + resultsList.get(position).getPosterPath())
                 .into(holder.moviePoster);
     }
 
