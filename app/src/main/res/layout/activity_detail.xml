@@ -33,6 +33,7 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/favorite_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fabSize="normal"
@@ -40,6 +41,7 @@
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right"
         android:layout_marginRight="@dimen/fab_default_margin"
-        android:src="@drawable/ic_favorite_white_24dp" />
+        android:src="@drawable/ic_favorite_border_white_24dp"
+        android:visibility="invisible" />
 
 </android.support.design.widget.CoordinatorLayout>

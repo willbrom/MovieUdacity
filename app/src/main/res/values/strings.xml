@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Movie Udacity</string>
+    <string name="class_name_extra">class-name</string>
 
     <!-- api key res -->
     <string name="movie_api_key">d89d8544c746180e24453e6f99a145da</string>
@@ -16,6 +17,7 @@
         unearths a long-buried secret that has the potential to plunge what\'s left of society into chaos.</string>
     <string name="test_release_date">2017-10-04</string>
     <string name="test_vote_average">7.4</string>
+    <string name="added_favorite">Movie added to Favorite</string>
 
     <!-- preference res -->
     <string name="preference_sort_list_title">Sort by</string>
@@ -28,5 +30,6 @@
     <string name="preference_sort_list_value_popular" translatable="false">popular</string>
     <string name="preference_sort_list_value_top_rated" translatable="false">top_rated</string>
     <string name="favorite">Favorites</string>
+    <string name="removed_favorite">Favorite removed</string>
 
 </resources>

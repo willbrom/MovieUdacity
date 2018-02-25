@@ -19,7 +19,7 @@ public class Results implements Parcelable {
     };
 
     private int voteCount;
-    private int id;
+    private int Id;
     private boolean video;
     private double voteAverage;
     private String title;
@@ -36,18 +36,21 @@ public class Results implements Parcelable {
     public Results() {
     }
 
-    public Results(String title, String releaseDate, double voteAverage, String posterPath) {
+    public Results(int Id, String title, String overView, String releaseDate, double voteAverage, String posterPath, String backdropPath) {
+        this.Id = Id;
         this.title = title;
+        this.overView = overView;
         this.releaseDate = releaseDate;
         this.voteAverage = voteAverage;
         this.posterPath = posterPath;
+        this.backdropPath = backdropPath;
     }
 
-    public Results(int voteCount, int id, boolean video, double voteAverage, String title,
+    public Results(int voteCount, int Id, boolean video, double voteAverage, String title,
                    double popularity, String posterPath, String originalLanguage, String originalTitle,
                    int[] genreIds, String backdropPath, boolean adult, String overView, String releaseDate) {
         this.voteCount = voteCount;
-        this.id = id;
+        this.Id = Id;
         this.video = video;
         this.voteAverage = voteAverage;
         this.title = title;
@@ -64,7 +67,7 @@ public class Results implements Parcelable {
 
     private Results(Parcel in) {
         this.voteCount = in.readInt();
-        this.id = in.readInt();
+        this.Id = in.readInt();
         this.video = in.readByte() != 0;
         this.voteAverage = in.readDouble();
         this.title = in.readString();
@@ -82,7 +85,7 @@ public class Results implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.voteCount);
-        dest.writeInt(this.id);
+        dest.writeInt(this.Id);
         dest.writeByte((byte) (video ? 0 : 1));
         dest.writeDouble(this.voteAverage);
         dest.writeString(this.title);
@@ -111,11 +114,11 @@ public class Results implements Parcelable {
     }
 
     public int getId() {
-        return id;
+        return Id;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.Id = id;
     }
 
     public boolean isVideo() {

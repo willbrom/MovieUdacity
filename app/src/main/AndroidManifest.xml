@@ -23,11 +23,8 @@
         <activity
             android:name=".DetailActivity"
             android:label=""
-            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.ActionBar.Transparent">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+
         </activity>
         <activity
             android:name=".SettingActivity"
@@ -39,7 +36,8 @@
         </activity>
         <activity android:name=".FavoriteActivity"
             android:label="@string/favorite"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

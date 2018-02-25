@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.R;
+import com.wilbrom.movieudacity.interfaces.MovieItemInteractionListener;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
@@ -20,10 +21,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 
     private List<Results> resultsList;
     private MovieItemInteractionListener mListener;
-
-    public interface MovieItemInteractionListener {
-        void onClickMovieItem(Results results);
-    }
 
     public MovieListAdapter(Context context) {
         mListener = (MovieItemInteractionListener) context;

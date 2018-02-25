@@ -1,27 +1,35 @@
 package com.wilbrom.movieudacity;
 
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.data.MovieContract;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String BUNDLE_KEY = "bundle-key";
+    private static final int LOADER_ID = 33;
 
     private TextView title;
     private TextView overview;
@@ -30,8 +38,12 @@ public class DetailActivity extends AppCompatActivity {
     private ImageView backdrop;
     private ImageView poster;
     private View parentView;
+    private FloatingActionButton favoriteBtn;
 
     private Results results;
+    private String callingClassName;
+    private boolean isFavorite;
+    private int movieId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +57,16 @@ public class DetailActivity extends AppCompatActivity {
         voteAverage = (TextView) findViewById(R.id.vote_average);
         backdrop = (ImageView) findViewById(R.id.backdrop);
         poster = (ImageView) findViewById(R.id.poster);
+        favoriteBtn = (FloatingActionButton) findViewById(R.id.favorite_fab);
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        results = (Results) getIntent().getParcelableExtra(Intent.EXTRA_TEXT);
+        Intent intent = getIntent();
+        results = (Results) intent.getParcelableExtra(Intent.EXTRA_TEXT);
+        callingClassName = intent.getStringExtra(getString(R.string.class_name_extra));
 
         title.setText(results.getTitle());
         overview.setText(results.getOverView());
@@ -66,25 +81,57 @@ public class DetailActivity extends AppCompatActivity {
                 .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w185) + results.getPosterPath())
                 .placeholder(R.drawable.placeholder_100x150)
                 .into(poster);
+
+        movieId = results.getId();
+        checkIfFavorite(movieId);
+    }
+
+    private void checkIfFavorite(int movieId) {
+        Bundle bundle = new Bundle();
+        bundle.putString(BUNDLE_KEY, String.valueOf(movieId));
+
+        getLoaderManager().initLoader(LOADER_ID, bundle, this);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
+
+            if (callingClassName.equals(MainActivity.CLASS_NAME))
+                NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
+            else if (callingClassName.equals(FavoriteActivity.CLASS_NAME))
+                NavUtils.navigateUpTo(this, new Intent(this, FavoriteActivity.class));
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void onClickFav(View view) {
-        Uri uri = getContentResolver().insert(MovieContract.ResultsEntry.CONTENT_URI, getContentValues());
+        if (!isFavorite) {
+            Uri uri = getContentResolver().insert(MovieContract.ResultsEntry.CONTENT_URI, getContentValues());
+            if (uri != null)
+                Snackbar.make(parentView, getString(R.string.added_favorite), Snackbar.LENGTH_SHORT).show();
+        } else {
+            String movieIdStr = String.valueOf(movieId);
 
-        if (uri != null)
-            Snackbar.make(parentView, "Data inserted", Snackbar.LENGTH_SHORT).show();
-        else
-            Toast.makeText(this, "Data inserted", Toast.LENGTH_SHORT).show();
+            Uri uri =  MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
+                    .appendPath(movieIdStr)
+                    .build();
+
+            String selection = MovieContract.ResultsEntry.COLUMN_MOVIE_ID + "=?";
+            String[] selectionArgs = new String[]{movieIdStr};
+
+            int i = getContentResolver().delete(uri, selection, selectionArgs);
+
+            if (i > 0) {
+                if (callingClassName.equals(MainActivity.CLASS_NAME))
+                    Snackbar.make(parentView, R.string.removed_favorite, Snackbar.LENGTH_SHORT).show();
+                else if (callingClassName.equals(FavoriteActivity.CLASS_NAME))
+                    finish();
+            }
+        }
     }
 
     private ContentValues getContentValues() {
@@ -117,4 +164,41 @@ public class DetailActivity extends AppCompatActivity {
 
         return genreIds;
     }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String movieId = bundle.getString(BUNDLE_KEY);
+
+        Uri uri =  MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
+                .appendPath(movieId)
+                .build();
+
+        String selection = MovieContract.ResultsEntry.COLUMN_MOVIE_ID + "=?";
+        String[] selectionArgs = new String[]{movieId};
+
+        return new CursorLoader(this,
+                uri,
+                null,
+                selection,
+                selectionArgs,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        int count = cursor.getCount();
+
+        if (count > 0) {
+            isFavorite = true;
+            favoriteBtn.setImageResource(R.drawable.ic_favorite_white_24dp);
+        } else {
+            isFavorite = false;
+            favoriteBtn.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+        }
+
+        favoriteBtn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {}
 }

@@ -13,15 +13,16 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.R;
 import com.wilbrom.movieudacity.data.MovieContract;
+import com.wilbrom.movieudacity.interfaces.MovieItemInteractionListener;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
-
 
 public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapter.FavoriteItemViewHolder> {
 
     private Cursor mCursor;
+    private MovieItemInteractionListener mListener;
 
     public FavoriteListAdapter(Context context) {
-
+        mListener = (MovieItemInteractionListener) context;
     }
 
     @Override
@@ -47,8 +48,8 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
 
         Picasso.with(context)
                 .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w154) + posterPath)
-                .placeholder(R.drawable.placeholder_62x90)
-                .error(R.drawable.placeholder_62x90)
+                .placeholder(R.drawable.placeholder_100x150)
+                .error(R.drawable.placeholder_100x150)
                 .into(holder.favoritePoster);
     }
 
@@ -63,7 +64,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
         notifyDataSetChanged();
     }
 
-    public class FavoriteItemViewHolder extends RecyclerView.ViewHolder{
+    public class FavoriteItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView favoriteTitle;
         private TextView favoriteDate;
@@ -76,6 +77,13 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
             favoriteDate = (TextView) itemView.findViewById(R.id.favorite_date);
             favoriteVote = (TextView) itemView.findViewById(R.id.favorite_vote);
             favoritePoster = (ImageView) itemView.findViewById(R.id.favorite_poster);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            mListener.onClickFavoriteItem(getAdapterPosition());
         }
     }
 }

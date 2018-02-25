@@ -6,6 +6,7 @@ import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -20,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.wilbrom.movieudacity.adapters.MovieListAdapter;
+import com.wilbrom.movieudacity.interfaces.MovieItemInteractionListener;
 import com.wilbrom.movieudacity.models.Movies;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.utilities.JsonUtils;
@@ -28,10 +30,11 @@ import com.wilbrom.movieudacity.utilities.NetworkUtils;
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements MovieListAdapter.MovieItemInteractionListener,
+public class MainActivity extends AppCompatActivity implements MovieItemInteractionListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
         LoaderManager.LoaderCallbacks<Movies> {
 
+    public static final String CLASS_NAME = MainActivity.class.getSimpleName();
     private static final int LOADER_ID = 11;
 
     private View container;
@@ -92,8 +95,12 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     public void onClickMovieItem(Results results) {
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT, results);
+        intent.putExtra(getString(R.string.class_name_extra), CLASS_NAME);
         startActivity(intent);
     }
+
+    @Override
+    public void onClickFavoriteItem(int position) {}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

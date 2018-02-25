@@ -52,8 +52,14 @@ public class MovieProvider extends ContentProvider {
                         sortOrder);
                 break;
             case CODE_MOVIE_WITH_ID:
+                retCursor = db.query(MovieContract.ResultsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
                 break;
-
         }
 
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -86,7 +92,15 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        final SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+            case CODE_MOVIE_WITH_ID:
+                int i = db.delete(MovieContract.ResultsEntry.TABLE_NAME, selection, selectionArgs);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return i;
+        }
         return 0;
     }
 
