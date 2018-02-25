@@ -2,6 +2,7 @@ package com.wilbrom.movieudacity.adapters;
 
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +12,13 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.R;
-import com.wilbrom.movieudacity.models.Results;
+import com.wilbrom.movieudacity.data.MovieContract;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
-import java.util.List;
 
 public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapter.FavoriteItemViewHolder> {
 
-    private List<Results> movieResults;
+    private Cursor mCursor;
 
     public FavoriteListAdapter(Context context) {
 
@@ -34,13 +34,19 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
     @Override
     public void onBindViewHolder(FavoriteItemViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
+        mCursor.moveToPosition(position);
 
-        holder.favoriteTitle.setText(movieResults.get(position).getTitle());
-        holder.favoriteDate.setText(movieResults.get(position).getReleaseDate());
-        holder.favoriteVote.setText(String.valueOf(movieResults.get(position).getVoteAverage()));
+        String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_TITLE));
+        String releaseDate = mCursor.getString(mCursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_RELEASE_DATE));
+        double vote = mCursor.getDouble(mCursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_VOTE_AVERAGE));
+        String posterPath = mCursor.getString(mCursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_POSTER_PATH));
+
+        holder.favoriteTitle.setText(title);
+        holder.favoriteDate.setText(releaseDate);
+        holder.favoriteVote.setText(String.valueOf(vote));
 
         Picasso.with(context)
-                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w92) + movieResults.get(position).getPosterPath())
+                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w154) + posterPath)
                 .placeholder(R.drawable.placeholder_62x90)
                 .error(R.drawable.placeholder_62x90)
                 .into(holder.favoritePoster);
@@ -48,12 +54,13 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
 
     @Override
     public int getItemCount() {
-        if (movieResults == null) return 0;
-        return movieResults.size();
+        if (mCursor == null) return 0;
+        return mCursor.getCount();
     }
 
-    public void setMovieResults(List<Results> movieResults) {
-        this.movieResults = movieResults;
+    public void swapCursor(Cursor newCursor) {
+        mCursor = newCursor;
+        notifyDataSetChanged();
     }
 
     public class FavoriteItemViewHolder extends RecyclerView.ViewHolder{
