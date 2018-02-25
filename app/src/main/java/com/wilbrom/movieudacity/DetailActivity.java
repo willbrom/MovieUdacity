@@ -63,7 +63,7 @@ public class DetailActivity extends AppCompatActivity {
                 .into(backdrop);
 
         Picasso.with(this)
-                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w154) + results.getPosterPath())
+                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w185) + results.getPosterPath())
                 .placeholder(R.drawable.placeholder_100x150)
                 .into(poster);
     }

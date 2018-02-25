@@ -86,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             manager.initLoader(LOADER_ID, bundle, this);
         else
             manager.restartLoader(LOADER_ID, bundle, this);
-
-//        new MovieAsyncTask().execute(url);
     }
 
     @Override
@@ -187,39 +185,4 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
     @Override
     public void onLoaderReset(Loader<Movies> loader) {}
-
-    public class MovieAsyncTask extends AsyncTask<URL, Void, Movies> {
-
-        @Override
-        protected void onPreExecute() {
-            progress.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Movies doInBackground(URL... urls) {
-            Movies movies = null;
-            URL url = urls[0];
-
-            try {
-                if (url != null) {
-                    String response = NetworkUtils.getHttpResponse(url);
-                    movies = JsonUtils.parseMovieJson(response);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return movies;
-        }
-
-        @Override
-        protected void onPostExecute(Movies movies) {
-            progress.setVisibility(View.INVISIBLE);
-            if (movies != null) {
-                adapter.setResultsList(movies.getResults());
-            } else {
-                Snackbar.make(container, getString(R.string.error_occurred), Snackbar.LENGTH_INDEFINITE).show();
-            }
-        }
-    }
 }
