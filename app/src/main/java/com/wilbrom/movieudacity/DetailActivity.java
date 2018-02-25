@@ -2,6 +2,7 @@ package com.wilbrom.movieudacity;
 
 
 import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -26,10 +27,12 @@ import com.wilbrom.movieudacity.data.MovieContract;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
 
     private static final String BUNDLE_KEY = "bundle-key";
-    private static final int LOADER_ID = 33;
+    private static final int LOADER_DB_ID = 33;
+    private static final int LOADER_NETWORK_ID = 44;
 
     private TextView title;
     private TextView overview;
@@ -84,13 +87,15 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         movieId = results.getId();
         checkIfFavorite(movieId);
+
+        Log.d("TAG", NetworkUtils.getReviewsUrl(String.valueOf(movieId), this) + "");
     }
 
     private void checkIfFavorite(int movieId) {
         Bundle bundle = new Bundle();
         bundle.putString(BUNDLE_KEY, String.valueOf(movieId));
 
-        getLoaderManager().initLoader(LOADER_ID, bundle, this);
+        getLoaderManager().initLoader(LOADER_DB_ID, bundle, this);
     }
 
     @Override
@@ -166,39 +171,69 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        String movieId = bundle.getString(BUNDLE_KEY);
+    public Loader onCreateLoader(int id, Bundle bundle) {
+        switch (id) {
+            case LOADER_DB_ID:
+                String movieId = bundle.getString(BUNDLE_KEY);
 
-        Uri uri =  MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
-                .appendPath(movieId)
-                .build();
+                Uri uri = MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
+                        .appendPath(movieId)
+                        .build();
 
-        String selection = MovieContract.ResultsEntry.COLUMN_MOVIE_ID + "=?";
-        String[] selectionArgs = new String[]{movieId};
+                String selection = MovieContract.ResultsEntry.COLUMN_MOVIE_ID + "=?";
+                String[] selectionArgs = new String[]{movieId};
 
-        return new CursorLoader(this,
-                uri,
-                null,
-                selection,
-                selectionArgs,
-                null);
-    }
+                return new CursorLoader(this,
+                        uri,
+                        null,
+                        selection,
+                        selectionArgs,
+                        null);
+            case LOADER_NETWORK_ID:
+                return new AsyncTaskLoader(this) {
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        int count = cursor.getCount();
+                    @Override
+                    protected void onStartLoading() {
+                        super.onStartLoading();
+                    }
 
-        if (count > 0) {
-            isFavorite = true;
-            favoriteBtn.setImageResource(R.drawable.ic_favorite_white_24dp);
-        } else {
-            isFavorite = false;
-            favoriteBtn.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                    @Override
+                    public Object loadInBackground() {
+                        return null;
+                    }
+
+                    @Override
+                    public void deliverResult(Object data) {
+                        super.deliverResult(data);
+                    }
+                };
         }
 
-        favoriteBtn.setVisibility(View.VISIBLE);
+        return null;
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
+    public void onLoadFinished(Loader loader, Object o) {
+        switch (loader.getId()) {
+            case LOADER_DB_ID:
+                Cursor cursor = (Cursor) o;
+                int count = cursor.getCount();
+
+                if (count > 0) {
+                    isFavorite = true;
+                    favoriteBtn.setImageResource(R.drawable.ic_favorite_white_24dp);
+                } else {
+                    isFavorite = false;
+                    favoriteBtn.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                }
+
+                favoriteBtn.setVisibility(View.VISIBLE);
+                break;
+            case LOADER_NETWORK_ID:
+                break;
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {}
 }
