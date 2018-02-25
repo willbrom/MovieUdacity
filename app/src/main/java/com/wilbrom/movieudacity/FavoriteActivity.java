@@ -1,24 +1,23 @@
 package com.wilbrom.movieudacity;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.wilbrom.movieudacity.adapters.FavoriteListAdapter;
 import com.wilbrom.movieudacity.data.MovieContract;
-import com.wilbrom.movieudacity.models.Results;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class FavoriteActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int LOADER_ID = 22;
     private RecyclerView movieRecyclerView;
     private FavoriteListAdapter adapter;
-    private List<Results> movieResults = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,24 +30,32 @@ public class FavoriteActivity extends AppCompatActivity {
         adapter = new FavoriteListAdapter(this);
         movieRecyclerView.setAdapter(adapter);
 
-        Cursor cursor = getContentResolver().query(MovieContract.ResultsEntry.CONTENT_URI, null, null, null, null);
+        LoaderManager manager = getLoaderManager();
+        Loader<Cursor> loader = manager.getLoader(LOADER_ID);
 
-        if (cursor != null)
-            Log.d("TAG", "Got cursor");
+        if (loader != null)
+            manager.initLoader(LOADER_ID, null, this);
         else
-            Log.d("TAG", "Cursor empty");
+            manager.restartLoader(LOADER_ID, null, this);
+    }
 
-        int i = 0;
-        Log.d("TAG", "Count: " + cursor.getCount());
-        while (cursor.getCount() > i) {
-            cursor.moveToNext();
-            movieResults.add(new Results(cursor.getString(cursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_TITLE)),
-                    cursor.getString(cursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_RELEASE_DATE)),
-                    cursor.getDouble(cursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_VOTE_AVERAGE)),
-                    cursor.getString(cursor.getColumnIndex(MovieContract.ResultsEntry.COLUMN_POSTER_PATH))));
-            i++;
-        }
+    @Override
+    public Loader onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(this,
+                MovieContract.ResultsEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
 
-        adapter.setMovieResults(movieResults);
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            adapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        adapter.swapCursor(null);
     }
 }
