@@ -37,6 +37,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Re
 
     public void setReviewResults(List<Reviews.ReviewResults> reviewResults) {
         this.reviewResults = reviewResults;
+        notifyDataSetChanged();
     }
 
     public class ReviewItemViewHolder extends RecyclerView.ViewHolder {
