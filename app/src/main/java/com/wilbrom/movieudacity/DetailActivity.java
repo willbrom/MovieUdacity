@@ -16,6 +16,8 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,14 +25,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.wilbrom.movieudacity.adapters.ReviewListAdapter;
 import com.wilbrom.movieudacity.data.MovieContract;
 import com.wilbrom.movieudacity.models.Results;
+import com.wilbrom.movieudacity.models.Reviews;
+import com.wilbrom.movieudacity.utilities.JsonUtils;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
+
+import java.io.IOException;
+import java.net.URL;
 
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
 
-    private static final String BUNDLE_KEY = "bundle-key";
+    private static final String BUNDLE_DB_KEY = "bundle-db-key";
+    private static final String BUNDLE_REVIEW_KEY = "bundle-review-key";
+    private static final String BUNDLE_VIDEO_KEY = "bundle-video-key";
+
     private static final int LOADER_DB_ID = 33;
     private static final int LOADER_NETWORK_ID = 44;
 
@@ -42,11 +53,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private ImageView poster;
     private View parentView;
     private FloatingActionButton favoriteBtn;
+    private RecyclerView reviewRecyclerView;
 
+    private ReviewListAdapter reviewAdapter;
     private Results results;
     private String callingClassName;
     private boolean isFavorite;
-    private int movieId;
+    private String movieId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +74,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         backdrop = (ImageView) findViewById(R.id.backdrop);
         poster = (ImageView) findViewById(R.id.poster);
         favoriteBtn = (FloatingActionButton) findViewById(R.id.favorite_fab);
+        reviewRecyclerView = (RecyclerView) findViewById(R.id.review_recycler_view);
         ActionBar actionBar = getSupportActionBar();
+
+        reviewAdapter = new ReviewListAdapter();
 
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -85,15 +101,37 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 .placeholder(R.drawable.placeholder_100x150)
                 .into(poster);
 
-        movieId = results.getId();
-        checkIfFavorite(movieId);
+        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        reviewRecyclerView.setAdapter(reviewAdapter);
 
-        Log.d("TAG", NetworkUtils.getReviewsUrl(String.valueOf(movieId), this) + "");
+        movieId = String.valueOf(results.getId());
+        checkIfFavorite(movieId);
+        getReviewsAndVideos();
     }
 
-    private void checkIfFavorite(int movieId) {
+    private void getReviewsAndVideos() {
+        URL reviewUrl = NetworkUtils.getReviewsUrl(movieId, this);
+        URL videoUrl = NetworkUtils.getVideosUrl(movieId, this);
+
+        Log.d("TAG", reviewUrl.toString());
+
         Bundle bundle = new Bundle();
-        bundle.putString(BUNDLE_KEY, String.valueOf(movieId));
+        bundle.putString(BUNDLE_REVIEW_KEY, reviewUrl.toString());
+        bundle.putString(BUNDLE_VIDEO_KEY, videoUrl.toString());
+
+        LoaderManager manager = getLoaderManager();
+        Loader loader =  manager.getLoader(LOADER_NETWORK_ID);
+
+        if (loader == null)
+            manager.initLoader(LOADER_NETWORK_ID, bundle, this);
+        else
+            manager.restartLoader(LOADER_NETWORK_ID, bundle, this);
+
+    }
+
+    private void checkIfFavorite(String movieId) {
+        Bundle bundle = new Bundle();
+        bundle.putString(BUNDLE_DB_KEY, movieId);
 
         getLoaderManager().initLoader(LOADER_DB_ID, bundle, this);
     }
@@ -119,14 +157,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             if (uri != null)
                 Snackbar.make(parentView, getString(R.string.added_favorite), Snackbar.LENGTH_SHORT).show();
         } else {
-            String movieIdStr = String.valueOf(movieId);
-
             Uri uri =  MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
-                    .appendPath(movieIdStr)
+                    .appendPath(movieId)
                     .build();
 
             String selection = MovieContract.ResultsEntry.COLUMN_MOVIE_ID + "=?";
-            String[] selectionArgs = new String[]{movieIdStr};
+            String[] selectionArgs = new String[]{movieId};
 
             int i = getContentResolver().delete(uri, selection, selectionArgs);
 
@@ -171,10 +207,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle bundle) {
+    public Loader onCreateLoader(int id, final Bundle bundle) {
         switch (id) {
             case LOADER_DB_ID:
-                String movieId = bundle.getString(BUNDLE_KEY);
+                String movieId = bundle.getString(BUNDLE_DB_KEY);
 
                 Uri uri = MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
                         .appendPath(movieId)
@@ -192,18 +228,39 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             case LOADER_NETWORK_ID:
                 return new AsyncTaskLoader(this) {
 
+                    Reviews reviews;
+
                     @Override
                     protected void onStartLoading() {
                         super.onStartLoading();
+
+                        if (reviews != null)
+                            deliverResult(reviews);
+                        else
+                            forceLoad();
                     }
 
                     @Override
                     public Object loadInBackground() {
-                        return null;
+                        String reviewUrl = bundle.getString(BUNDLE_REVIEW_KEY);
+//                        String videoUrl = bundle.getString(BUNDLE_VIDEO_KEY);
+
+                        Reviews reviews = null;
+
+                        try {
+                            String reviewJson = NetworkUtils.getHttpResponse(new URL(reviewUrl));
+//                            String videoJson = NetworkUtils.getHttpResponse(new URL(videoUrl));
+                            reviews = JsonUtils.parseReviewJson(reviewJson);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        return reviews;
                     }
 
                     @Override
                     public void deliverResult(Object data) {
+                        reviews = (Reviews) data;
                         super.deliverResult(data);
                     }
                 };
@@ -230,6 +287,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 favoriteBtn.setVisibility(View.VISIBLE);
                 break;
             case LOADER_NETWORK_ID:
+                Reviews reviews = (Reviews) o;
+
+                if (reviews != null) {
+                    if (reviews.getReviewsResults() != null) {
+                        reviewAdapter.setReviewResults(reviews.getReviewsResults());
+                    }
+                }
+
                 break;
         }
     }

@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements MovieItemInteract
         LoaderManager manager = getLoaderManager();
         Loader<Movies> loader = manager.getLoader(LOADER_ID);
 
-        if (loader != null && !prefChange)
+        if (loader == null && !prefChange)
             manager.initLoader(LOADER_ID, bundle, this);
         else
             manager.restartLoader(LOADER_ID, bundle, this);

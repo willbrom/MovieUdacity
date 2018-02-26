@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/movie_detail_layout" />
+        <include layout="@layout/movie_complete_layout" />
 
     </android.support.v4.widget.NestedScrollView>
 
@@ -39,7 +39,7 @@
         app:fabSize="normal"
         android:onClick="onClickFav"
         app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|right"
+        app:layout_anchorGravity="bottom|right|end"
         android:layout_marginRight="@dimen/fab_default_margin"
         android:src="@drawable/ic_favorite_border_white_24dp"
         android:visibility="invisible" />
