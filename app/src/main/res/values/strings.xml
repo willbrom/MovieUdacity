@@ -31,5 +31,7 @@
     <string name="preference_sort_list_value_top_rated" translatable="false">top_rated</string>
     <string name="favorite">Favorites</string>
     <string name="removed_favorite">Favorite removed</string>
+    <string name="review_title">Reviews:</string>
+    <string name="overview_title">Overview:</string>
 
 </resources>

@@ -101,7 +101,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 .placeholder(R.drawable.placeholder_100x150)
                 .into(poster);
 
-        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         reviewRecyclerView.setAdapter(reviewAdapter);
 
         movieId = String.valueOf(results.getId());
