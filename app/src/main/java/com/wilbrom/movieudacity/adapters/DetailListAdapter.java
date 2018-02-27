@@ -26,6 +26,11 @@ public class DetailListAdapter extends RecyclerView.Adapter<DetailListAdapter.De
     private static final int VIEW_TYPE_VIDEO = 33;
 
     private List<Object> detailResults;
+    private Context context;
+
+    public DetailListAdapter(Context context) {
+        this.context = context;
+    }
 
     @Override
     public DetailItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -121,7 +126,7 @@ public class DetailListAdapter extends RecyclerView.Adapter<DetailListAdapter.De
                 content = (TextView) itemView.findViewById(R.id.review_content);
             } else {
                 videoRecyclerView = (RecyclerView) itemView.findViewById(R.id.video_recycler_view);
-                adapter = new VideoListAdapter();
+                adapter = new VideoListAdapter(context);
             }
         }
     }

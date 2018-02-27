@@ -25,6 +25,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.adapters.DetailListAdapter;
+import com.wilbrom.movieudacity.adapters.VideoListAdapter;
 import com.wilbrom.movieudacity.data.MovieContract;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.models.Reviews;
@@ -37,7 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks, VideoListAdapter.OnClickTrailerListener {
 
     private static final String BUNDLE_DB_KEY = "bundle-db-key";
     private static final String BUNDLE_REVIEW_KEY = "bundle-review-key";
@@ -73,7 +74,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         detailRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
         detailRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        detailListAdapter = new DetailListAdapter();
+        detailListAdapter = new DetailListAdapter(this);
         detailRecyclerView.setAdapter(detailListAdapter);
 
         parentView = (CoordinatorLayout) findViewById(R.id.coordinator);
@@ -151,8 +152,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void onClickFav(View view) {
         if (!isFavorite) {
             Uri uri = getContentResolver().insert(MovieContract.ResultsEntry.CONTENT_URI, getContentValues());
-//            if (uri != null)
-//                Snackbar.make(parentView, getString(R.string.added_favorite), Snackbar.LENGTH_SHORT).show();
         } else {
             Uri uri =  MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
                     .appendPath(movieId)
@@ -164,8 +163,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             int i = getContentResolver().delete(uri, selection, selectionArgs);
 
             if (i > 0) {
-//                if (callingClassName.equals(MainActivity.CLASS_NAME))
-//                    Snackbar.make(parentView, R.string.removed_favorite, Snackbar.LENGTH_SHORT).show();
                 if (callingClassName.equals(FavoriteActivity.CLASS_NAME))
                     finish();
             }
@@ -330,9 +327,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             case LOADER_NETWORK_VIDEO_ID:
                 Videos videos = (Videos) o;
                 if (videos != null) {
-//                    if (videos.getVideoResultsList() != null) {
-//                        videoResults = videos.getVideoResultsList();
-//                    }
                     this.videos = videos;
                 }
                 videoFinished = true;
@@ -350,4 +344,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader loader) {}
+
+    @Override
+    public void onClickTrailer(String trailerKey) {
+        String youtubeUrl = NetworkUtils.BASE_YOUTUBE_URL + trailerKey;
+        Uri uri = Uri.parse(youtubeUrl);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
+        if (intent.resolveActivity(getPackageManager()) != null)
+            startActivity(intent);
+    }
 }
