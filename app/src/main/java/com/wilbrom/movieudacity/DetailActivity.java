@@ -28,6 +28,7 @@ import com.wilbrom.movieudacity.adapters.DetailListAdapter;
 import com.wilbrom.movieudacity.data.MovieContract;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.models.Reviews;
+import com.wilbrom.movieudacity.models.Videos;
 import com.wilbrom.movieudacity.utilities.JsonUtils;
 import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
@@ -43,7 +44,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final String BUNDLE_VIDEO_KEY = "bundle-video-key";
 
     private static final int LOADER_DB_ID = 33;
-    private static final int LOADER_NETWORK_ID = 44;
+    private static final int LOADER_NETWORK_REVIEW_ID = 44;
+    private static final int LOADER_NETWORK_VIDEO_ID = 55;
 
     private ImageView backdrop;
     private View parentView;
@@ -56,6 +58,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String callingClassName;
     private boolean isFavorite;
     private String movieId;
+    private boolean videoFinished;
+    private boolean reviewFinished;
+
+    private List<Reviews.ReviewResults> reviewResults = new ArrayList<>();
+    private List<Videos.VideoResults> videoResults = new ArrayList<>();
+    private Videos videos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,20 +102,28 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         URL reviewUrl = NetworkUtils.getReviewsUrl(movieId, this);
         URL videoUrl = NetworkUtils.getVideosUrl(movieId, this);
 
+        Log.d("TAG", videoUrl.toString());
         Log.d("TAG", reviewUrl.toString());
 
-        Bundle bundle = new Bundle();
-        bundle.putString(BUNDLE_REVIEW_KEY, reviewUrl.toString());
-        bundle.putString(BUNDLE_VIDEO_KEY, videoUrl.toString());
+        Bundle bundleReview = new Bundle();
+        bundleReview.putString(BUNDLE_REVIEW_KEY, reviewUrl.toString());
+
+        Bundle bundleVideo = new Bundle();
+        bundleVideo.putString(BUNDLE_VIDEO_KEY, videoUrl.toString());
 
         LoaderManager manager = getLoaderManager();
-        Loader loader =  manager.getLoader(LOADER_NETWORK_ID);
+        Loader loaderReview =  manager.getLoader(LOADER_NETWORK_REVIEW_ID);
+        Loader loaderVideo =  manager.getLoader(LOADER_NETWORK_VIDEO_ID);
 
-        if (loader != null)
-            manager.initLoader(LOADER_NETWORK_ID, bundle, this);
+        if (loaderReview != null)
+            manager.initLoader(LOADER_NETWORK_REVIEW_ID, bundleReview, this);
         else
-            manager.restartLoader(LOADER_NETWORK_ID, bundle, this);
+            manager.restartLoader(LOADER_NETWORK_REVIEW_ID, bundleReview, this);
 
+        if (loaderVideo != null)
+            manager.initLoader(LOADER_NETWORK_VIDEO_ID, bundleVideo, this);
+        else
+            manager.restartLoader(LOADER_NETWORK_VIDEO_ID, bundleVideo, this);
     }
 
     private void checkIfFavorite(String movieId) {
@@ -135,8 +151,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void onClickFav(View view) {
         if (!isFavorite) {
             Uri uri = getContentResolver().insert(MovieContract.ResultsEntry.CONTENT_URI, getContentValues());
-            if (uri != null)
-                Snackbar.make(parentView, getString(R.string.added_favorite), Snackbar.LENGTH_SHORT).show();
+//            if (uri != null)
+//                Snackbar.make(parentView, getString(R.string.added_favorite), Snackbar.LENGTH_SHORT).show();
         } else {
             Uri uri =  MovieContract.ResultsEntry.CONTENT_URI.buildUpon()
                     .appendPath(movieId)
@@ -148,9 +164,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             int i = getContentResolver().delete(uri, selection, selectionArgs);
 
             if (i > 0) {
-                if (callingClassName.equals(MainActivity.CLASS_NAME))
-                    Snackbar.make(parentView, R.string.removed_favorite, Snackbar.LENGTH_SHORT).show();
-                else if (callingClassName.equals(FavoriteActivity.CLASS_NAME))
+//                if (callingClassName.equals(MainActivity.CLASS_NAME))
+//                    Snackbar.make(parentView, R.string.removed_favorite, Snackbar.LENGTH_SHORT).show();
+                if (callingClassName.equals(FavoriteActivity.CLASS_NAME))
                     finish();
             }
         }
@@ -206,7 +222,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         selection,
                         selectionArgs,
                         null);
-            case LOADER_NETWORK_ID:
+            case LOADER_NETWORK_REVIEW_ID:
                 return new AsyncTaskLoader(this) {
 
                     Reviews reviews;
@@ -224,13 +240,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     @Override
                     public Object loadInBackground() {
                         String reviewUrl = bundle.getString(BUNDLE_REVIEW_KEY);
-//                        String videoUrl = bundle.getString(BUNDLE_VIDEO_KEY);
 
                         Reviews reviews = null;
 
                         try {
                             String reviewJson = NetworkUtils.getHttpResponse(new URL(reviewUrl));
-//                            String videoJson = NetworkUtils.getHttpResponse(new URL(videoUrl));
                             reviews = JsonUtils.parseReviewJson(reviewJson);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -242,6 +256,43 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     @Override
                     public void deliverResult(Object data) {
                         reviews = (Reviews) data;
+                        super.deliverResult(data);
+                    }
+                };
+            case LOADER_NETWORK_VIDEO_ID:
+                return new AsyncTaskLoader(this) {
+
+                    Videos videos;
+
+                    @Override
+                    protected void onStartLoading() {
+                        super.onStartLoading();
+
+                        if (videos != null)
+                            deliverResult(videos);
+                        else
+                            forceLoad();
+                    }
+
+                    @Override
+                    public Object loadInBackground() {
+                        String videoUrl = bundle.getString(BUNDLE_VIDEO_KEY);
+
+                        Videos videos = null;
+
+                        try {
+                            String videoJson = NetworkUtils.getHttpResponse(new URL(videoUrl));
+                            videos = JsonUtils.parseVideoJson(videoJson);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        return videos;
+                    }
+
+                    @Override
+                    public void deliverResult(Object data) {
+                        videos = (Videos) data;
                         super.deliverResult(data);
                     }
                 };
@@ -267,17 +318,33 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                 favoriteBtn.setVisibility(View.VISIBLE);
                 break;
-            case LOADER_NETWORK_ID:
+            case LOADER_NETWORK_REVIEW_ID:
                 Reviews reviews = (Reviews) o;
-                List<Object> obj = new ArrayList<>();
-                obj.add(results);
                 if (reviews != null) {
                     if (reviews.getReviewsResults() != null) {
-                        obj.addAll(reviews.getReviewsResults());
+                        reviewResults = reviews.getReviewsResults();
                     }
                 }
-                detailListAdapter.setDetailResults(obj);
+                reviewFinished = true;
                 break;
+            case LOADER_NETWORK_VIDEO_ID:
+                Videos videos = (Videos) o;
+                if (videos != null) {
+//                    if (videos.getVideoResultsList() != null) {
+//                        videoResults = videos.getVideoResultsList();
+//                    }
+                    this.videos = videos;
+                }
+                videoFinished = true;
+                break;
+        }
+
+        if (videoFinished && reviewFinished) {
+            List<Object> obj = new ArrayList<>();
+            obj.add(results);
+            obj.add(videos);
+            obj.addAll(reviewResults);
+            detailListAdapter.setDetailResults(obj);
         }
     }
 

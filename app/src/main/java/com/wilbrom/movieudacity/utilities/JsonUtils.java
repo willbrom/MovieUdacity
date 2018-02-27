@@ -4,6 +4,7 @@ package com.wilbrom.movieudacity.utilities;
 import com.wilbrom.movieudacity.models.Movies;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.models.Reviews;
+import com.wilbrom.movieudacity.models.Videos;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,10 +88,36 @@ public class JsonUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return reviews;
     }
 
-    public static String parseVideoJson(String rawJson) {
-        return null;
+    public static Videos parseVideoJson(String rawJson) {
+        Videos videos = null;
+
+        try {
+            videos = new Videos();
+            JSONObject rootObject = new JSONObject(rawJson);
+            videos.setId(rootObject.getInt("id"));
+
+            JSONArray resultsArray = rootObject.getJSONArray("results");
+
+            for (int i = 0; i < resultsArray.length(); i++) {
+                JSONObject resultObj = resultsArray.getJSONObject(i);
+                videos.addVideoResultsListItem(resultObj.getString("id"),
+                        resultObj.getString("iso_639_1"),
+                        resultObj.getString("iso_3166_1"),
+                        resultObj.getString("key"),
+                        resultObj.getString("name"),
+                        resultObj.getString("site"),
+                        resultObj.getInt("size"),
+                        resultObj.getString("type"));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return videos;
     }
 }
