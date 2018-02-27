@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements MovieItemInteract
         LoaderManager manager = getLoaderManager();
         Loader<Movies> loader = manager.getLoader(LOADER_ID);
 
-        if (loader == null && !prefChange)
+        if (loader != null && !prefChange)
             manager.initLoader(LOADER_ID, bundle, this);
         else
             manager.restartLoader(LOADER_ID, bundle, this);
@@ -147,12 +147,13 @@ public class MainActivity extends AppCompatActivity implements MovieItemInteract
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                progress.setVisibility(View.VISIBLE);
 
                 if (data != null)
                     deliverResult(data);
-                else
+                else {
+                    progress.setVisibility(View.VISIBLE);
                     forceLoad();
+                }
             }
 
             @Override
@@ -186,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements MovieItemInteract
         if (movies != null) {
             adapter.setResultsList(movies.getResults());
         } else {
-            Snackbar.make(container, getString(R.string.error_occurred), Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(container, getString(R.string.error_occurred), Snackbar.LENGTH_LONG).show();
         }
     }
 
