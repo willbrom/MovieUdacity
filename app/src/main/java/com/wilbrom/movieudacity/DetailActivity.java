@@ -22,11 +22,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.wilbrom.movieudacity.adapters.DetailListAdapter;
-import com.wilbrom.movieudacity.adapters.ReviewListAdapter;
 import com.wilbrom.movieudacity.data.MovieContract;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.models.Reviews;
@@ -35,7 +33,8 @@ import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
 
@@ -46,20 +45,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final int LOADER_DB_ID = 33;
     private static final int LOADER_NETWORK_ID = 44;
 
-    private TextView title;
-    private TextView overview;
-    private TextView releaseDate;
-    private TextView voteAverage;
     private ImageView backdrop;
-    private ImageView poster;
     private View parentView;
     private FloatingActionButton favoriteBtn;
-    private RecyclerView reviewRecyclerView;
 
     private RecyclerView detailRecyclerView;
     private DetailListAdapter detailListAdapter;
 
-    private ReviewListAdapter reviewAdapter;
     private Results results;
     private String callingClassName;
     private boolean isFavorite;
@@ -76,18 +68,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         detailListAdapter = new DetailListAdapter();
         detailRecyclerView.setAdapter(detailListAdapter);
 
-//        parentView = (CoordinatorLayout) findViewById(R.id.coordinator);
-//        title = (TextView) findViewById(R.id.title);
-//        overview = (TextView) findViewById(R.id.overview);
-//        releaseDate = (TextView) findViewById(R.id.release_date);
-//        voteAverage = (TextView) findViewById(R.id.vote_average);
+        parentView = (CoordinatorLayout) findViewById(R.id.coordinator);
         backdrop = (ImageView) findViewById(R.id.backdrop);
-//        poster = (ImageView) findViewById(R.id.poster);
         favoriteBtn = (FloatingActionButton) findViewById(R.id.favorite_fab);
-//        reviewRecyclerView = (RecyclerView) findViewById(R.id.review_recycler_view);
         ActionBar actionBar = getSupportActionBar();
-
-//        reviewAdapter = new ReviewListAdapter();
 
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -97,29 +81,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         results = (Results) intent.getParcelableExtra(Intent.EXTRA_TEXT);
         callingClassName = intent.getStringExtra(getString(R.string.class_name_extra));
 
-
         Picasso.with(this)
                 .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w780) + results.getBackdropPath())
                 .into(backdrop);
-
-
-//        detailListAdapter.setResults(results);
-//        title.setText(results.getTitle());
-//        overview.setText(results.getOverView());
-//        releaseDate.setText(results.getReleaseDate());
-//        voteAverage.setText(String.valueOf(results.getVoteAverage()));
-//
-//        Picasso.with(this)
-//                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w780) + results.getBackdropPath())
-//                .into(backdrop);
-//
-//        Picasso.with(this)
-//                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w185) + results.getPosterPath())
-//                .placeholder(R.drawable.placeholder_100x150)
-//                .into(poster);
-//
-//        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-//        reviewRecyclerView.setAdapter(reviewAdapter);
 
         movieId = String.valueOf(results.getId());
         checkIfFavorite(movieId);
@@ -139,7 +103,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         LoaderManager manager = getLoaderManager();
         Loader loader =  manager.getLoader(LOADER_NETWORK_ID);
 
-        if (loader == null)
+        if (loader != null)
             manager.initLoader(LOADER_NETWORK_ID, bundle, this);
         else
             manager.restartLoader(LOADER_NETWORK_ID, bundle, this);
@@ -305,13 +269,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 break;
             case LOADER_NETWORK_ID:
                 Reviews reviews = (Reviews) o;
-
+                List<Object> obj = new ArrayList<>();
+                obj.add(results);
                 if (reviews != null) {
                     if (reviews.getReviewsResults() != null) {
-                        detailListAdapter.setResults(results, reviews.getReviewsResults());
+                        obj.addAll(reviews.getReviewsResults());
                     }
                 }
-
+                detailListAdapter.setDetailResults(obj);
                 break;
         }
     }
