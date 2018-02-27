@@ -3,7 +3,6 @@ package com.wilbrom.movieudacity.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +22,7 @@ public class DetailListAdapter extends RecyclerView.Adapter<DetailListAdapter.De
     private static final int VIEW_TYPE_DETAIL = 11;
     private static final int VIEW_TYPE_REVIEW = 22;
 
-    private Results results;
-    private List<Reviews.ReviewResults> reviewResults;
+    private List<Object> detailResults;
 
     @Override
     public DetailItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -42,7 +40,7 @@ public class DetailListAdapter extends RecyclerView.Adapter<DetailListAdapter.De
     public void onBindViewHolder(DetailItemViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
         if (position == 0) {
-
+            Results results = (Results) detailResults.get(0);
             holder.title.setText(results.getTitle());
             holder.overview.setText(results.getOverView());
             holder.releaseDate.setText(results.getReleaseDate());
@@ -54,23 +52,17 @@ public class DetailListAdapter extends RecyclerView.Adapter<DetailListAdapter.De
                     .into(holder.poster);
 
         } else {
-            holder.author.setText(reviewResults.get(position).getAuthor());
-            holder.content.setText(reviewResults.get(position).getContent());
+            Reviews.ReviewResults reviewResults = (Reviews.ReviewResults) detailResults.get(position);
+            holder.author.setText(reviewResults.getAuthor());
+            holder.content.setText(reviewResults.getContent());
         }
 
     }
 
     @Override
     public int getItemCount() {
-//        if (reviewResults != null)
-//            return ;
-        return reviewResults.size() + 1;
-    }
-
-    public void setResults(Results results , List<Reviews.ReviewResults> reviewResults) {
-        this.results = results;
-        this.reviewResults = reviewResults;
-        notifyDataSetChanged();
+        if (detailResults == null) return 0;
+        return detailResults.size();
     }
 
     @Override
@@ -81,9 +73,11 @@ public class DetailListAdapter extends RecyclerView.Adapter<DetailListAdapter.De
             return VIEW_TYPE_REVIEW;
     }
 
-    public void setReviewResults() {
+    public void setDetailResults(List<Object> detailResults) {
+        this.detailResults = detailResults;
         notifyDataSetChanged();
     }
+
 
     public class DetailItemViewHolder extends RecyclerView.ViewHolder {
 
