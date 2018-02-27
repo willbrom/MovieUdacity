@@ -47,7 +47,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
         holder.favoriteVote.setText(String.valueOf(vote));
 
         Picasso.with(context)
-                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w154) + posterPath)
+                .load(NetworkUtils.getImageUrl(NetworkUtils.IMAGE_SIZE_w185) + posterPath)
                 .placeholder(R.drawable.placeholder_100x150)
                 .error(R.drawable.placeholder_100x150)
                 .into(holder.favoritePoster);
