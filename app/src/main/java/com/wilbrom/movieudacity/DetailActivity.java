@@ -13,12 +13,14 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -137,6 +139,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
         if (id == android.R.id.home) {
 
             if (callingClassName.equals(MainActivity.CLASS_NAME))
@@ -145,7 +148,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 NavUtils.navigateUpTo(this, new Intent(this, FavoriteActivity.class));
 
             return true;
+        } else if (id == R.id.action_share) {
+            onShare();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -343,6 +350,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail, menu);
+        return true;
+    }
+
+    @Override
     public void onLoaderReset(Loader loader) {}
 
     @Override
@@ -353,5 +366,27 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         if (intent.resolveActivity(getPackageManager()) != null)
             startActivity(intent);
+    }
+
+    private void onShare() {
+        String key = "";
+
+        if (videos != null) {
+            for (Videos.VideoResults results : videos.getVideoResultsList()) {
+                if (results.getType().equals("Trailer")) {
+                    key = results.getKey();
+                    break;
+                } else {
+                    key = results.getKey();
+                }
+            }
+        }
+
+        ShareCompat.IntentBuilder
+                .from(this)
+                .setType("text/plain")
+                .setChooserTitle(R.string.share_trailer)
+                .setText(NetworkUtils.BASE_YOUTUBE_URL + key)
+                .startChooser();
     }
 }
