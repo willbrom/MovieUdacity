@@ -307,6 +307,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoadFinished(Loader loader, Object o) {
+        List<Object> obj = new ArrayList<>();
+        obj.add(results);
+        detailListAdapter.setDetailResults(obj);
+
         switch (loader.getId()) {
             case LOADER_DB_ID:
                 Cursor cursor = (Cursor) o;
@@ -341,8 +345,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         if (videoFinished && reviewFinished) {
-            List<Object> obj = new ArrayList<>();
-            obj.add(results);
             obj.add(videos);
             obj.addAll(reviewResults);
             detailListAdapter.setDetailResults(obj);

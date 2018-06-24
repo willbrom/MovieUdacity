@@ -19,6 +19,7 @@ public class NetworkUtils {
 
     private static final String BASE_MOVIE_URL = "http://api.themoviedb.org/3/movie/";
     private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String GENRE_URL = "https://api.themoviedb.org/3/genre/movie/list";
     private static final String VIDEO_END_PATH = "/videos";
     private static final String REVIEWS_END_PATH = "/reviews";
 
@@ -35,12 +36,16 @@ public class NetworkUtils {
         String key = context.getString(R.string.movie_api_key);
         String fullPath = "";
 
-        switch (sortBy) {
-            case POPULAR:
-                fullPath = BASE_MOVIE_URL + POPULAR;
-                break;
-            case TOP_RATED:
-                fullPath = BASE_MOVIE_URL + TOP_RATED;
+        if (sortBy.equals("genre")) {
+            fullPath = GENRE_URL;
+        } else {
+            switch (sortBy) {
+                case POPULAR:
+                    fullPath = BASE_MOVIE_URL + POPULAR;
+                    break;
+                case TOP_RATED:
+                    fullPath = BASE_MOVIE_URL + TOP_RATED;
+            }
         }
 
         Uri uri = Uri.parse(fullPath).buildUpon()

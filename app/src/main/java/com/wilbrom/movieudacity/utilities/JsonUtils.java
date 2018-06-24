@@ -1,6 +1,7 @@
 package com.wilbrom.movieudacity.utilities;
 
 
+import com.wilbrom.movieudacity.models.Genre;
 import com.wilbrom.movieudacity.models.Movies;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.models.Reviews;
@@ -119,5 +120,25 @@ public class JsonUtils {
         }
 
         return videos;
+    }
+
+    public static ArrayList<Genre> parseGenreJson(String rawJson) {
+        ArrayList<Genre> genreList = new ArrayList<>();
+
+        try {
+            JSONObject rootObject = new JSONObject(rawJson);
+            JSONArray genreArray = rootObject.getJSONArray("genres");
+
+            for (int i = 0; i < genreArray.length(); i++) {
+                int id = genreArray.getJSONObject(i).getInt("id");
+                String name = genreArray.getJSONObject(i).getString("name");
+                genreList.add(new Genre(name, id));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return genreList;
     }
 }

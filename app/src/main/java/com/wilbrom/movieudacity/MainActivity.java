@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.ProgressBar;
 
 import com.wilbrom.movieudacity.adapters.MovieListAdapter;
 import com.wilbrom.movieudacity.interfaces.MovieItemInteractionListener;
+import com.wilbrom.movieudacity.models.Genre;
 import com.wilbrom.movieudacity.models.Movies;
 import com.wilbrom.movieudacity.models.Results;
 import com.wilbrom.movieudacity.utilities.JsonUtils;
@@ -29,6 +31,8 @@ import com.wilbrom.movieudacity.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieItemInteractionListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements MovieItemInteract
     private ProgressBar progress;
     private MovieListAdapter adapter;
     private String sortBy;
+
+    public static ArrayList<Genre> genreList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,18 @@ public class MainActivity extends AppCompatActivity implements MovieItemInteract
 
         setUpSharedPreferences();
         startAsync(sortBy, false);
+
+        if (savedInstanceState == null)
+            new GetGenreAsyncTask().execute();
+        else {
+            genreList = savedInstanceState.getParcelableArrayList("genre-list");
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("genre-list", genreList);
+        super.onSaveInstanceState(outState);
     }
 
     private void setUpSharedPreferences() {
@@ -193,4 +211,28 @@ public class MainActivity extends AppCompatActivity implements MovieItemInteract
 
     @Override
     public void onLoaderReset(Loader<Movies> loader) {}
+
+    public class GetGenreAsyncTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            URL url = NetworkUtils.getUrl("genre", MainActivity.this);
+            String data = "";
+
+            try {
+                data = NetworkUtils.getHttpResponse(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (!s.equals("")) {
+                genreList = JsonUtils.parseGenreJson(s);
+            }
+        }
+    }
 }
