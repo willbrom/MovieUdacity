@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MovieUdacity.iml" filepath="$PROJECT_DIR$/MovieUdacity.iml" />
-      <module fileurl="file://C:\Users\user\AndroidStudioProjects\MovieUdacity\.idea\MovieUdacity.iml" filepath="C:\Users\user\AndroidStudioProjects\MovieUdacity\.idea\MovieUdacity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../user/AndroidStudioProjects/MovieUdacity/.idea/MovieUdacity.iml" filepath="$PROJECT_DIR$/../../../user/AndroidStudioProjects/MovieUdacity/.idea/MovieUdacity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MovieUdacity.iml" filepath="$PROJECT_DIR$/MovieUdacity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
