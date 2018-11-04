@@ -4,24 +4,23 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp" >
+    android:padding="4dp" >
 
     <ImageView
         android:id="@+id/video_trailer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_movie_black_50dp"
+        android:src="@drawable/placeholder_thumbnail_mq"
         android:layout_gravity="center_horizontal" />
 
     <TextView
         android:id="@+id/video_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="6sp"
+        android:textSize="8sp"
         android:textStyle="bold"
         tools:text="Official trailer us"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone" />
+        android:visibility="visible"
+        android:padding="4dp" />
 
 </LinearLayout>

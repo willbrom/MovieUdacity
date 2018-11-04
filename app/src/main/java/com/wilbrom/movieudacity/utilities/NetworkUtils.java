@@ -19,6 +19,7 @@ public class NetworkUtils {
 
     private static final String BASE_MOVIE_URL = "http://api.themoviedb.org/3/movie/";
     private static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
+    private static final String BASE_YOUTUBE_VIDEO_THUMBNAIL_URL = "http://img.youtube.com/vi/";
     private static final String GENRE_URL = "https://api.themoviedb.org/3/genre/movie/list";
     private static final String VIDEO_END_PATH = "/videos";
     private static final String REVIEWS_END_PATH = "/reviews";
@@ -113,6 +114,14 @@ public class NetworkUtils {
             default:
                 return BASE_IMAGE_URL + IMAGE_SIZE_w185;
         }
+    }
+
+    public static String getVideoThubnailUrl(String videoId, String quality) {
+        StringBuilder fullPath = new StringBuilder(BASE_YOUTUBE_VIDEO_THUMBNAIL_URL);
+        fullPath.append(videoId + "/");
+        fullPath.append(quality + ".jpg");
+
+        return String.valueOf(fullPath);
     }
 
     public static String getHttpResponse(URL url) throws IOException {
